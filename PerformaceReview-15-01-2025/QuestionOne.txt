@@ -1,0 +1,63 @@
+
+public class QuestionOne {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("please give the text : ");
+		String text = sc.nextLine();
+		
+		String[] words = text.split(" ");
+		
+		int count = 0;
+		
+		// add int value and string into the map
+		Map<Integer,String> sortedResult = new TreeMap<Integer,String>();
+		
+		for(String s: words)
+		{
+			// convert to charArray
+			char ch[] = s.toCharArray();
+			
+			count=0;
+			
+			// get the value,take the sum
+			for(char c : ch)
+			{
+				int value = (int)c;
+				System.out.println(value);
+				count += value;
+			}
+			System.out.println(" Sum of values of " + s +" is :" + count);
+			
+						
+			sortedResult.put(count,s);
+					
+			
+//			// store it in an array
+//			int[] arr = new int[words.length];
+//			
+//			for(int i =0 ; i< arr.length;i++)
+//			{
+//				arr[i] = count;
+//			}
+//			
+//			count =0;
+//			
+//			// sort the array of values
+//			Arrays.sort(arr);
+//			
+//			for(int i:arr)
+//			{
+//				System.out.println(i);
+//			}
+		
+		}
+		
+		System.out.println(sortedResult);
+		
+			
+	}
+
+}

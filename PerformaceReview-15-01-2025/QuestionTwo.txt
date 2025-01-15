@@ -1,0 +1,55 @@
+package DyashinAssessment;
+
+import java.util.ArrayList;
+
+public class QuestionTwo {
+	
+	public static void main(String[] args)
+	{
+		ArrayList<String> al = new ArrayList<String>();
+		
+		al.add("name");
+		al.add("age");
+		al.add("salary");
+					
+		Employee e1 = new Employee("ramu", 20,20000L);
+		Employee e2 = new Employee("bheemu", 30,30000L);
+		Employee e3 = new Employee("somu", 40,40000L);
+		
+		ArrayList<Employee> al2 = new ArrayList<Employee>();
+		
+		al2.add(e1);
+		al2.add(e2);
+		al2.add(e3);
+		
+//		for(String s:al)
+//		{
+//			System.out.println(s + " : ");
+//			
+//			al2.get(0)
+//			
+//			for(Employee e :al2)
+//			{
+//				System.out.println(e.getName());
+//			}
+//		}
+//		
+		for(int i =0 ; i<al2.size();i++)
+		{
+			for(int j =0 ; j<al.size();j++)
+			{
+				System.out.println(al.get(j) + " : " + al2.get(i).getName());
+				System.out.println(al.get(j) + " : " + al2.get(i).getAge());
+				System.out.println(al.get(j) + " : " + al2.get(i).getSalary());
+			}
+					
+		}
+		
+//		for(Object o:al)
+//		{
+//			System.out.println(o + " : " + e1.getName());
+//		}
+		
+		
+	}
+}
