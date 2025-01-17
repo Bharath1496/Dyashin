@@ -1,0 +1,19 @@
+LINKEDLIST - 
+
+give underlying datastructure and it's working , with example and its' explanation
+whch operator is used internally?
+
+TABLE 1 -
+in a table give every operation (include all methods from collection interface , list interface , class specific methods) which can be made on an LINKEDlist , it's time complexity , explanation.
+
+TABLE 2 -
+Linkedlist constructors - when they are used ? , why ?
+practical working examples
+
+TABLE 3 -
+inner classes - why they are used ? , how they work ? , what they do ? , when they are called?
+practical working examples 
+
+why is it prioritised over others? - advantages compared to others
+or
+why is it not prioritised over others? - dis-advantages over others
