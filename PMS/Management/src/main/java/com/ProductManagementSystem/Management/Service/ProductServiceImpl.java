@@ -80,5 +80,16 @@ public class ProductServiceImpl implements ProductService {
 	        }
 	        return false;  // SKU doesn't exist
 	    }
+	 
+	 @Override
+	 public List<ProductDTO> mapToProductDTOList(List<Products> products) {
+		    List<ProductDTO> productDtos = new ArrayList<>();
+		    for (Products product : products) {
+		        ProductDTO productDto = ProductMapper.toDTO(product);  // Assuming this method exists
+		        productDtos.add(productDto);
+		    }
+		    return productDtos;
+		}
+
 
 }

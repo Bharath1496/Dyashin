@@ -17,4 +17,6 @@ public interface ProductService {
 	public void deleteById(int Id);
 	
 	public boolean isSkuExists(String sku);
+	
+	public List<ProductDTO> mapToProductDTOList(List<Products> products); 
 }

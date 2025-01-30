@@ -1,8 +1,13 @@
 package com.ProductManagementSystem.Management.Controller;
 
+//import java.awt.print.Pageable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,12 +18,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ProductManagementSystem.Management.DTO.ProductDTO;
+import com.ProductManagementSystem.Management.DTO.ProductMapper;
 import com.ProductManagementSystem.Management.Service.AuditService;
 import com.ProductManagementSystem.Management.Service.ProductService;
 import com.ProductManagementSystem.Management.entity.Products;
+import org.springframework.data.domain.Sort;
+
+
+import org.springframework.data.domain.Page;
+//import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,11 +51,50 @@ public class ProductController {
 		theAuditService = theAS;
 	}
 	
-	@GetMapping("/products")
-	public List<ProductDTO> findAllProducts()
-	{
-		return theProductService.findAll();
-	}
+//	@GetMapping("/products")
+//	public List<ProductDTO> findAllProducts()
+//	{
+//		return theProductService.findAll();
+//	}
+	
+
+		@GetMapping("/products")
+		public ResponseEntity<Map<String, Object>> findAllProducts(
+        @RequestParam(value = "page", defaultValue = "0") int page, 
+        @RequestParam(value = "size", defaultValue = "10") int size,
+        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, 
+        @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir, 
+        @RequestParam(value = "category", required = false) Integer categoryId) 
+		{
+			// Create the Pageable object with sorting and pagination
+		    Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+		    
+		 // Get a Page of products (filtered by category if categoryId is provided)
+		    Page<Products> productPage;
+		    if (categoryId != null) {
+		        productPage = theProductRepo.findByCategoryId(categoryId, pageable);
+		    } else {
+		        productPage = theProductRepo.findAll(pageable);
+		    }
+
+		    // Map the products to DTOs
+		    List<ProductDTO> productDtos = theProductService.mapToProductDTOList(productPage.getContent());
+
+		    // Prepare response with the paginated data and total count
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("products", productDtos);
+		    response.put("totalCount", productPage.getTotalElements());
+		    response.put("totalPages", productPage.getTotalPages());
+		    response.put("currentPage", productPage.getNumber());
+		    response.put("pageSize", productPage.getSize());
+
+		    return ResponseEntity.ok(response);
+		}
+	
+	
+	
+	
+	
 	
 	@GetMapping("/products/{id}")
 	public ProductDTO findProductByID(@PathVariable int id)
