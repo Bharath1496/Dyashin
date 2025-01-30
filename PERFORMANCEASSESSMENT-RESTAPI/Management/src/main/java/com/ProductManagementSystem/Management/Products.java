@@ -49,11 +49,11 @@ public class Products {
     private String updated_by;
 	
 	@Column(name="created_at")
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	//@JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private Timestamp created_at;
 	
 	@Column(name="updated_at")
-	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	//@JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private Timestamp updated_at;
 
 	public Products(int id, String name, String description, String sku, double price, int stock_quantity,
