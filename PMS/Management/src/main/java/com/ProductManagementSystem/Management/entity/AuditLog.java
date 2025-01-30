@@ -1,5 +1,6 @@
 package com.ProductManagementSystem.Management.entity;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
@@ -42,7 +43,7 @@ public class AuditLog {
     private String performedBy; 
     
 	@Column(name="performed_at")
-    private LocalTime performedAt;
+    private LocalDateTime performedAt;
 
 	@Override
 	public String toString() {

@@ -15,4 +15,6 @@ public interface ProductService {
 	public ProductDTO Update(ProductDTO p);
 	// delete product
 	public void deleteById(int Id);
+	
+	public boolean isSkuExists(String sku);
 }

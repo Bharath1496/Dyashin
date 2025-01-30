@@ -68,5 +68,17 @@ public class ProductServiceImpl implements ProductService {
 	public void deleteById(int id) {
 		ProductRepo.deleteById(id);
 	}
+	
+	 @Override
+	 public boolean isSkuExists(String sku) {
+	        
+	        List<Products> products = ProductRepo.findAll(); 
+	        for (Products product : products) {
+	            if (product.getSku().equals(sku)) {
+	                return true;  // SKU exists
+	            }
+	        }
+	        return false;  // SKU doesn't exist
+	    }
 
 }

@@ -1,5 +1,6 @@
 package com.ProductManagementSystem.Management.DTO;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class AuditLogDTO {
 	
     private String performedBy; 
     
-    private LocalTime performedAt;
+    private LocalDateTime performedAt;
 
 }
 

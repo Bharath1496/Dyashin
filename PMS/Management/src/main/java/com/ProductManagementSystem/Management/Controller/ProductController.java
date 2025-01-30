@@ -1,5 +1,6 @@
 package com.ProductManagementSystem.Management.Controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ProductManagementSystem.Management.DTO.ProductDTO;
+import com.ProductManagementSystem.Management.Service.AuditService;
 import com.ProductManagementSystem.Management.Service.ProductService;
 import com.ProductManagementSystem.Management.entity.Products;
 
@@ -24,9 +26,12 @@ public class ProductController {
 	
 	private ProductService theProductService;
 	
-	public ProductController(ProductService thePS)
+	private AuditService theAuditService;
+	
+	public ProductController(ProductService thePS , AuditService theAS)
 	{
 		theProductService = thePS;
+		theAuditService = theAS;
 	}
 	
 	@GetMapping("/products")
@@ -44,9 +49,54 @@ public class ProductController {
 	@PostMapping("/products")
 	public ResponseEntity<ProductDTO> add(@RequestHeader (value = "ADMIN", required = false) String authHeader ,
 										@RequestBody ProductDTO productDto) {
-		ProductDTO savedProduct = theProductService.Update(productDto);
+		
+		 // 1. Validation for required fields
+	    if (productDto.getName() == null || productDto.getSku() == null || productDto.getPrice() <= 0) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	    }
+		
+	    // 2. Check for duplicate SKU
+	    if (theProductService.isSkuExists(productDto.getSku())) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+	    }
+	    
+	    // 3. Set timestamps and user
+	    productDto.setCreated_at(LocalDateTime.now());
+	    productDto.setCreated_by(authHeader != null ? authHeader : "defaultUser");
+	    
+	    // 4. Save the product and return
+	    ProductDTO savedProduct = theProductService.Update(productDto);
+
+	    // 5. Log the action
+//	    Should create an audit log entry
+	    theAuditService.createAuditLog(savedProduct);
+		
 	    return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
 	}
+	
+	
+	
+
+	   
+
+	    
+
+	    
+	   
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@PutMapping("/products/{id}")
 	public ResponseEntity<ProductDTO> update(@RequestHeader (value = "ADMIN", required = false) String authHeader , 
