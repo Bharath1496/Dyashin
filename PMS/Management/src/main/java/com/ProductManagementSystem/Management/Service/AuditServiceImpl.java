@@ -24,14 +24,14 @@ public class AuditServiceImpl implements AuditService{
 	}
 
 	@Override
-    public void createAuditLog(ProductDTO product) {
+    public void createAuditLog(ProductDTO product , String action) {
         
 		try {
 		// Create an audit log entry
         AuditLog auditLog = new AuditLog();
         auditLog.setEntityType("Product");
         auditLog.setEntityId(product.getId());
-        auditLog.setAction("CREATE");
+        auditLog.setAction(action);
         
         
      // Create a map to represent the changes in JSON format

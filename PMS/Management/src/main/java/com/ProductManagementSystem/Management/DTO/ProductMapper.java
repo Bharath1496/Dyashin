@@ -24,9 +24,9 @@ public class ProductMapper {
             product.getCategory_id().getId(),
             product.getCreated_by(),
             product.getUpdated_by(),
-            product.getIsDeleted(),
             product.getCreated_at(),
-            product.getUpdated_at()
+            product.getUpdated_at(),
+            product.getIsDeleted()
             
         );
     }

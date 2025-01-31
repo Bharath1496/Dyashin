@@ -27,7 +27,7 @@ public interface ProductService {
 	
 	Page<ProductDTO> findAll(Pageable pageable);
 	
-	Page<ProductDTO> findAllByCategory(Integer categoryId, Pageable pageable);
+//	Page<ProductDTO> findAllByCategory(Integer categoryId, Pageable pageable);
 	
 	public ProductDTO checkIfProductExists(int id);
 	
@@ -35,7 +35,7 @@ public interface ProductService {
 	
 	 public Page<ProductDTO> findBySku(String sku, Pageable pageable);
 	     
-	 public Page<ProductDTO> findByCategory(Integer categoryId, Pageable pageable);
+//	 public Page<ProductDTO> findByCategory(Integer categoryId, Pageable pageable);
 
 //	Page<Products> productPage = theProductService.findAll(pageable);
 }

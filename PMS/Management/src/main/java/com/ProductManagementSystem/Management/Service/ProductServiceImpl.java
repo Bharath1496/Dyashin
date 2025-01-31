@@ -100,20 +100,20 @@ public class ProductServiceImpl implements ProductService {
 	        throw new IllegalArgumentException("Stock quantity cannot be negative");
 	    }
 	    
-	    Products existingProduct = ProductRepo.findById(e.getId()).orElse(null);
+//	    Products existingProduct = ProductRepo.findById(e.getId()).orElse(null);
 	    
-	    ProductDTO pdto = ProductMapper.toDTO(existingProduct);
+//	    ProductDTO pdto = ProductMapper.toDTO(existingProduct);
 
-	    if (pdto == null) 
+//	    if (pdto == null) 
 	    {
-	        throw new RuntimeException("Product not found");
+//	        throw new RuntimeException("Product not found");
 	    }
 	    
 //	    if (pdto.getVersion() != e.getVersion()) {
 //	        throw new RuntimeException("Product has been modified by another user. Please reload and try again.");
 //	    }
 	    
-		Products p = ProductMapper.toEntity(pdto);
+		Products p = ProductMapper.toEntity(e);
 		ProductRepo.save(p);
 		ProductDTO pdtoTwo = ProductMapper.toDTO(p);
 		return pdtoTwo;
@@ -179,24 +179,24 @@ public class ProductServiceImpl implements ProductService {
 		    return new PageImpl<>(productDtos, pageable, productPage.getTotalElements());
 	    }
 	 
-	 @Override
-	 public Page<ProductDTO> findAllByCategory(Integer categoryId, Pageable pageable) {
-	     
-		 Page<Products> productPage = ProductRepo.findByCategoryId(categoryId, pageable);
-	     
-	     List<ProductDTO> productDtos = new ArrayList<>();
-		    
-	     for (Products product : productPage.getContent()) 
-		    {
-		        productDtos.add(ProductMapper.toDTO(product));
-		    }
-
-		    return new PageImpl<>(productDtos, pageable, productPage.getTotalElements());
-		    
-//	     return productPage.map(ProductMapper::toDTO);
-	     
-	 }
-	 
+//	 @Override
+//	 public Page<ProductDTO> findAllByCategory(Integer categoryId, Pageable pageable) {
+//	     
+//		 Page<Products> productPage = ProductRepo.findByCategoryId(categoryId, pageable);
+//	     
+//	     List<ProductDTO> productDtos = new ArrayList<>();
+//		    
+//	     for (Products product : productPage.getContent()) 
+//		    {
+//		        productDtos.add(ProductMapper.toDTO(product));
+//		    }
+//
+//		    return new PageImpl<>(productDtos, pageable, productPage.getTotalElements());
+//		    
+////	     return productPage.map(ProductMapper::toDTO);
+//	     
+//	 }
+//	 
 	 @Override
 	 public ProductDTO checkIfProductExists(int id) {
 		 
@@ -236,16 +236,16 @@ public class ProductServiceImpl implements ProductService {
 //	     return convertToProductDTOPage(productPage, pageable);
 	 }
 
-	 @Override
-	 public Page<ProductDTO> findByCategory(Integer categoryId, Pageable pageable) {
-	     Page<Products> productPage = ProductRepo.findByCategoryId(categoryId, pageable);
-	     List<ProductDTO> productDtos = new ArrayList<>();
-	     for (Products product : productPage.getContent()) {
-	         productDtos.add(ProductMapper.toDTO(product));
-	     }
-	     return new PageImpl<>(productDtos, pageable, productPage.getTotalElements());
-//	     return convertToProductDTOPage(productPage, pageable);
-	 }
+//	 @Override
+//	 public Page<ProductDTO> findByCategory(Integer categoryId, Pageable pageable) {
+//	     Page<Products> productPage = ProductRepo.findByCategoryId(categoryId, pageable);
+//	     List<ProductDTO> productDtos = new ArrayList<>();
+//	     for (Products product : productPage.getContent()) {
+//	         productDtos.add(ProductMapper.toDTO(product));
+//	     }
+//	     return new PageImpl<>(productDtos, pageable, productPage.getTotalElements());
+////	     return convertToProductDTOPage(productPage, pageable);
+//	 }
 
 	 // Utility method for converting entity pages to DTO pages
 //	 private Page<ProductDTO> convertToProductDTOPage(Page<Products> productPage, Pageable pageable) {

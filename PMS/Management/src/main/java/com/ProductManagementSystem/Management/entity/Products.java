@@ -71,15 +71,15 @@ public class Products {
 //	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime updated_at;
 
-	@Column(name = "isDeleted")
+	@Column(name = "is_Deleted")
 	private Boolean isDeleted;
 
-	@Override
-	public String toString() {
-		return "Products [id=" + id + ", name=" + name + ", description=" + description + ", sku=" + sku + ", price="
-				+ price + ", stock_quantity=" + stock_quantity + ", category_id=" + category_id + ", created_by="
-				+ created_by + ", updated_by=" + updated_by + ", created_at=" + created_at + ", updated_at="
-				+ updated_at + "isDeleted" + isDeleted + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Products [id=" + id + ", name=" + name + ", description=" + description + ", sku=" + sku + ", price="
+//				+ price + ", stock_quantity=" + stock_quantity + ", category_id=" + category_id + ", created_by="
+//				+ created_by + ", updated_by=" + updated_by + ", created_at=" + created_at + ", updated_at="
+//				+ updated_at + "isDeleted" + isDeleted + "]";
+//	}
 
 }

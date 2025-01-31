@@ -23,8 +23,7 @@ public class ProductDTO {
 	private int category_id;
 	private String created_by;
 	private String updated_by;
-	private Boolean isDeleted;
-
+	
 //	@Version // This will enable optimistic locking
 //	private int version;
 
@@ -33,6 +32,7 @@ public class ProductDTO {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime updated_at;
+	private Boolean isDeleted;
 	
 	
 

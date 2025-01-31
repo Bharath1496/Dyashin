@@ -73,13 +73,14 @@ public class ProductController {
 	    // 3. Set timestamps and user
 	    productDto.setCreated_at(LocalDateTime.now());
 	    productDto.setCreated_by(authHeader != null ? authHeader : "defaultUser");
+	    productDto.setIsDeleted(false);
 	    
 	    // 4. Save the product and return
 	    ProductDTO savedProduct = theProductService.Update(productDto);
 
 	    // 5. Log the action
 	    //Should create an audit log entry
-	    theAuditService.createAuditLog(savedProduct);
+	    theAuditService.createAuditLog(savedProduct , "CREATE");
 		
 	    return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
 	}
@@ -100,14 +101,14 @@ public class ProductController {
 		// Fetch products with optional category filtering
 		Page<ProductDTO> productPage;
 		
-		if (categoryId != null) 
-		{
-		   productPage = theProductService.findAllByCategory(categoryId, pageable); 
-		} 
-		else 
-		{
+//		if (categoryId != null) - this
+//		{
+//		   productPage = theProductService.findAllByCategory(categoryId, pageable); 
+//		} 
+//		else 
+//		{
 		   productPage = theProductService.findAll(pageable);
-		}
+//		}
 		    
 		// Prepare response data
 		Map<String, Object> response = new HashMap<>();
@@ -124,19 +125,28 @@ public class ProductController {
 	
 		@PutMapping("/products/{id}")
 		public ResponseEntity<ProductDTO> update(
-				@RequestHeader (value = "ADMIN", required = false) String authHeader , 
-				@RequestParam(value = "id") int id , 
+				@RequestHeader (value = "ADMIN", required = true) String authHeader , 
+				@PathVariable(value = "id") int id , 
 				@RequestBody ProductDTO productDto) 
 		{
 			// 1. Check if the product exists
-		    ProductDTO existingProduct = theProductService.checkIfProductExists(productDto.getId());
+		    ProductDTO existingProduct = theProductService.checkIfProductExists(id);
+		    ProductDTO updatedProduct; 
+		    if(existingProduct !=null)
+		    {
+		    	// 2. Update product fields
+			    productDto.setId(id);
+			    productDto.setIsDeleted(false);
+				updatedProduct = theProductService.Update(productDto);
+		    }
+		    else
+		    {
+		    	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		    }
 		    
-		    // 2. Update product fields
-		    productDto.setId(id);
-			ProductDTO updatedProduct = theProductService.Update(productDto);
 
 		    //Should create an audit log entry
-		    theAuditService.createAuditLog(updatedProduct);
+		    theAuditService.createAuditLog(updatedProduct, "UPDATE");
 		    
 		    return ResponseEntity.ok(updatedProduct);
 		    
@@ -145,25 +155,21 @@ public class ProductController {
 		
 		@DeleteMapping("/products/{id}")
 		public ResponseEntity<ProductDTO> delete(
-				@RequestParam(value = "id") int id  , 
+				@PathVariable(value = "id") int id  , 
 				@RequestHeader (value = "ADMIN", required = true) String authHeader)
 		{
 			
 			// 1. Check if the product exists
 		    ProductDTO existingProduct = theProductService.checkIfProductExists(id);
-		    
-		    if (existingProduct == null) {
-		        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		    }
 		    		    
 			theProductService.deleteById(id);
 
-		    //Should create an audit log entry
-		    theAuditService.createAuditLog(existingProduct);
+		    // 3. Create an audit log entry with action "DELETE"
+		    theAuditService.createAuditLog(existingProduct, "DELETE");
 
 		    // 4. Return success response
 		    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-
+		    
 		}
 	
 	
@@ -173,7 +179,7 @@ public class ProductController {
 //			return theProductService.findById(id);
 //		}
 		
-		@GetMapping("/api/v1/products/search")
+		@GetMapping("/products/search")
 		public ResponseEntity<Map<String, Object>> searchProducts(
 		        @RequestParam(value = "name", required = false) String name,
 		        @RequestParam(value = "sku", required = false) String sku,
@@ -203,10 +209,10 @@ public class ProductController {
 		    {
 		        productPage = theProductService.findBySku(sku, pageable);
 		    } 
-		    else if (categoryId != null) 
-		    {
-		        productPage = theProductService.findByCategory(categoryId, pageable);
-		    } 
+//		    else if (categoryId != null) - this
+//		    {
+//		        productPage = theProductService.findByCategory(categoryId, pageable);
+//		    } 
 		    else 
 		    {
 		        // If no valid parameter is provided, return a bad request response
