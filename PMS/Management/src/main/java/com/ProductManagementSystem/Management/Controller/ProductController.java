@@ -2,6 +2,8 @@ package com.ProductManagementSystem.Management.Controller;
 
 //import java.awt.print.Pageable;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,68 +53,20 @@ public class ProductController {
 		theAuditService = theAS;
 	}
 	
-//	@GetMapping("/products")
-//	public List<ProductDTO> findAllProducts()
-//	{
-//		return theProductService.findAll();
-//	}
-	
-
-		@GetMapping("/products")
-		public ResponseEntity<Map<String, Object>> findAllProducts(
-        @RequestParam(value = "page", defaultValue = "0") int page, 
-        @RequestParam(value = "size", defaultValue = "10") int size,
-        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, 
-        @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir, 
-        @RequestParam(value = "category", required = false) Integer categoryId) 
-		{
-			// Create the Pageable object with sorting and pagination
-		    Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
-		    
-		 // Get a Page of products (filtered by category if categoryId is provided)
-		    Page<Products> productPage;
-		    if (categoryId != null) {
-		        productPage = theProductRepo.findByCategoryId(categoryId, pageable);
-		    } else {
-		        productPage = theProductRepo.findAll(pageable);
-		    }
-
-		    // Map the products to DTOs
-		    List<ProductDTO> productDtos = theProductService.mapToProductDTOList(productPage.getContent());
-
-		    // Prepare response with the paginated data and total count
-		    Map<String, Object> response = new HashMap<>();
-		    response.put("products", productDtos);
-		    response.put("totalCount", productPage.getTotalElements());
-		    response.put("totalPages", productPage.getTotalPages());
-		    response.put("currentPage", productPage.getNumber());
-		    response.put("pageSize", productPage.getSize());
-
-		    return ResponseEntity.ok(response);
-		}
-	
-	
-	
-	
-	
-	
-	@GetMapping("/products/{id}")
-	public ProductDTO findProductByID(@PathVariable int id)
-	{
-		return theProductService.findById(id);
-	}
-	
 	@PostMapping("/products")
 	public ResponseEntity<ProductDTO> add(@RequestHeader (value = "ADMIN", required = false) String authHeader ,
-										@RequestBody ProductDTO productDto) {
+										@RequestBody ProductDTO productDto) 
+	{
 		
 		 // 1. Validation for required fields
-	    if (productDto.getName() == null || productDto.getSku() == null || productDto.getPrice() <= 0) {
+	    if (productDto.getName() == null || productDto.getSku() == null || productDto.getPrice() <= 0) 
+	    {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	    }
 		
 	    // 2. Check for duplicate SKU
-	    if (theProductService.isSkuExists(productDto.getSku())) {
+	    if (theProductService.isSkuExists(productDto.getSku())) 
+	    {
 	        return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
 	    }
 	    
@@ -124,52 +78,154 @@ public class ProductController {
 	    ProductDTO savedProduct = theProductService.Update(productDto);
 
 	    // 5. Log the action
-//	    Should create an audit log entry
+	    //Should create an audit log entry
 	    theAuditService.createAuditLog(savedProduct);
 		
 	    return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
 	}
-	
-	
-	
 
-	   
-
-	    
-
-	    
-	   
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	@PutMapping("/products/{id}")
-	public ResponseEntity<ProductDTO> update(@RequestHeader (value = "ADMIN", required = false) String authHeader , 
-											@PathVariable int id , 
-											@RequestBody ProductDTO productDto) {
-		productDto.setId(id);
-		ProductDTO updatedProduct = theProductService.Update(productDto);
-	    return ResponseEntity.ok(updatedProduct);
-	}
-	
-	@DeleteMapping("/products/{id}")
-	public String delete(@PathVariable int id , 
-			@RequestHeader (value = "ADMIN", required = true) String authHeader)
+	@GetMapping("/products")
+	public ResponseEntity<Map<String, Object>> findAllProducts(
+        @RequestParam(value = "page", defaultValue = "0") int page, 
+        @RequestParam(value = "size", defaultValue = "10") int size,
+        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, 
+        @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir, 
+        @RequestParam(value = "category", required = false) Integer categoryId) 
 	{
-		theProductService.deleteById(id);
-		return "Product " + id + "deleted";
+		// Create the Pageable object with sorting and pagination
+		Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+		    
+//		    Page<ProductDTO> productPage = theProductService.findAll(pageable);
+		    
+		// Fetch products with optional category filtering
+		Page<ProductDTO> productPage;
+		
+		if (categoryId != null) 
+		{
+		   productPage = theProductService.findAllByCategory(categoryId, pageable); 
+		} 
+		else 
+		{
+		   productPage = theProductService.findAll(pageable);
+		}
+		    
+		// Prepare response data
+		Map<String, Object> response = new HashMap<>();
+		response.put("products", productPage.getContent()); // List of products
+		response.put("currentPage", productPage.getNumber());
+		response.put("totalItems", productPage.getTotalElements());
+		response.put("totalPages", productPage.getTotalPages());
+		response.put("pageSize", productPage.getSize());
+		response.put("isLastPage", productPage.isLast());
+		    
+		return ResponseEntity.ok(response);
+		    
 	}
 	
+		@PutMapping("/products/{id}")
+		public ResponseEntity<ProductDTO> update(
+				@RequestHeader (value = "ADMIN", required = false) String authHeader , 
+				@RequestParam(value = "id") int id , 
+				@RequestBody ProductDTO productDto) 
+		{
+			// 1. Check if the product exists
+		    ProductDTO existingProduct = theProductService.checkIfProductExists(productDto.getId());
+		    
+		    // 2. Update product fields
+		    productDto.setId(id);
+			ProductDTO updatedProduct = theProductService.Update(productDto);
 
+		    //Should create an audit log entry
+		    theAuditService.createAuditLog(updatedProduct);
+		    
+		    return ResponseEntity.ok(updatedProduct);
+		    
+		}
+		
+		
+		@DeleteMapping("/products/{id}")
+		public ResponseEntity<ProductDTO> delete(
+				@RequestParam(value = "id") int id  , 
+				@RequestHeader (value = "ADMIN", required = true) String authHeader)
+		{
+			
+			// 1. Check if the product exists
+		    ProductDTO existingProduct = theProductService.checkIfProductExists(id);
+		    
+		    if (existingProduct == null) {
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		    }
+		    		    
+			theProductService.deleteById(id);
+
+		    //Should create an audit log entry
+		    theAuditService.createAuditLog(existingProduct);
+
+		    // 4. Return success response
+		    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+
+		}
+	
+	
+//		@GetMapping("/products/{id}")
+//		public ProductDTO findProductByID(@PathVariable int id)
+//		{
+//			return theProductService.findById(id);
+//		}
+		
+		@GetMapping("/api/v1/products/search")
+		public ResponseEntity<Map<String, Object>> searchProducts(
+		        @RequestParam(value = "name", required = false) String name,
+		        @RequestParam(value = "sku", required = false) String sku,
+		        @RequestParam(value = "category", required = false) Integer categoryId,
+		        @RequestParam(value = "minPrice", required = false) Double minPrice,
+		        @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+		        @RequestParam(value = "page", defaultValue = "0") int page,
+		        @RequestParam(value = "size", defaultValue = "10") int size,
+		        @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+		        @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir) 
+		{
+		    
+		    // Create the Pageable object with sorting and pagination
+		    Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+		    
+		    // Fetch paginated and sorted results from the service
+//		    Page<ProductDTO> productPage = theProductService.findById(pageable);
+//		    Page<ProductDTO> productPage = theProductService.findByName(name, pageable);
+		    Page<ProductDTO> productPage;
+
+		    // Determine search criteria
+		    if (name != null && !name.isEmpty()) 
+		    {
+		        productPage = theProductService.findByName(name, pageable);
+		    } 
+		    else if (sku != null && !sku.isEmpty()) 
+		    {
+		        productPage = theProductService.findBySku(sku, pageable);
+		    } 
+		    else if (categoryId != null) 
+		    {
+		        productPage = theProductService.findByCategory(categoryId, pageable);
+		    } 
+		    else 
+		    {
+		        // If no valid parameter is provided, return a bad request response
+		        Map<String, String> errorResponse = new HashMap<>();
+		        errorResponse.put("error", "Please provide at least one search criteria: name, sku, or category.");
+		        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", errorResponse));
+		    }
+		    // Prepare response data
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("products", productPage.getContent()); // List of products
+		    response.put("currentPage", productPage.getNumber());
+		    response.put("totalItems", productPage.getTotalElements());
+		    response.put("totalPages", productPage.getTotalPages());
+		    response.put("pageSize", productPage.getSize());
+		    response.put("isLastPage", productPage.isLast());
+		    
+		    return ResponseEntity.ok(response);
+		}		
+		
+		
+	
 }

@@ -24,8 +24,10 @@ public class ProductMapper {
             product.getCategory_id().getId(),
             product.getCreated_by(),
             product.getUpdated_by(),
+            product.getIsDeleted(),
             product.getCreated_at(),
             product.getUpdated_at()
+            
         );
     }
     
@@ -63,6 +65,7 @@ public class ProductMapper {
 
         product.setCreated_by(dto.getCreated_by());
         product.setUpdated_by(dto.getUpdated_by());
+        product.setIsDeleted(dto.getIsDeleted());
         product.setCreated_at(dto.getCreated_at());
         product.setUpdated_at(dto.getUpdated_at());
         
